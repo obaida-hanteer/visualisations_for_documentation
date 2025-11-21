@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMA MoM Agent - Architecture Flow</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .diagram-container {
+            background: white;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .icon-component {
+            cursor: default;
+        }
+
+        .component-label {
+            font-size: 14px;
+            font-weight: bold;
+            fill: #2c3e50;
+            cursor: pointer;
+        }
+
+        .component-label:hover {
+            fill: #3498db;
+            text-decoration: underline;
+        }
+
+        .info-icon {
+            font-size: 12px;
+            fill: #95a5a6;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .info-icon:hover {
+            opacity: 1;
+            fill: #3498db;
+        }
+
+        .note-box {
+            font-size: 11px;
+            fill: #7f8c8d;
+        }
+
+        .info-bubble rect {
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .info-bubble text {
+            transition: opacity 0.4s ease 0.1s;
+        }
+
+        .info-bubble {
+            pointer-events: none;
+        }
+
+        .info-bubble:not(.active) rect {
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        .info-bubble:not(.active) text {
+            opacity: 0;
+        }
+
+        .info-bubble.active text {
+            opacity: 1;
+        }
+
+        .arrow {
+            stroke: #3498db;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+            opacity: 0.6;
+        }
+
+        .arrow-bi {
+            stroke: #95a5a6;
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 5,5;
+            opacity: 0.6;
+        }
+
+        .arrow-label {
+            font-size: 11px;
+            fill: #95a5a6;
+            font-style: italic;
+        }
+
+        .arrow-label-blue {
+            font-size: 11px;
+            fill: #3498db;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagram-container">
+        <svg viewBox="0 0 1450 700" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Arrow marker -->
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#3498db" fill-opacity="0.6" />
+                </marker>
+                <!-- Dashed arrow marker -->
+                <marker id="arrowhead-dashed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#95a5a6" fill-opacity="0.6" />
+                </marker>
+                <!-- Dashed arrow marker (start) -->
+                <marker id="arrowhead-dashed-start" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
+                    <polygon points="10 0, 0 3, 10 6" fill="#95a5a6" fill-opacity="0.6" />
+                </marker>
+                <!-- Blue arrow marker (start) -->
+                <marker id="arrowhead-start" markerWidth="10" markerHeight="10" refX="1" refY="3" orient="auto">
+                    <polygon points="10 0, 0 3, 10 6" fill="#3498db" fill-opacity="0.6" />
+                </marker>
+            </defs>
+
+            <!-- Component 1: SharePoint (top left) -->
+            <g class="icon-component">
+                <circle cx="100" cy="100" r="50" fill="#27ae60" opacity="0.15"/>
+                <image href="icons/Folder-Sharepoint-icon.png" x="70" y="70" width="60" height="60"/>
+                <text x="100" y="40" text-anchor="middle" class="component-label">SharePoint MoM Folders</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="30" y="52" width="240" height="125" rx="5" fill="#e8f5e9" stroke="#27ae60" stroke-width="2"/>
+                    <text x="40" y="67" class="note-box" font-weight="bold" fill="#27ae60">Three folders to monitor:</text>
+                    <text x="40" y="82" class="note-box">• NT Supply Agreement folders</text>
+                    <text x="40" y="97" class="note-box">• Confidential Steering Board Meetings</text>
+                    <text x="40" y="112" class="note-box">• Maintenance Meetings</text>
+                    <text x="40" y="127" class="note-box">Size: 30-40GB, ~1,700 .docx files</text>
+                    <text x="40" y="142" class="note-box">Only modified files will be fetched</text>
+                    <text x="150" y="167" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Component 2: Access Management (bottom left) -->
+            <g class="icon-component">
+                <circle cx="320" cy="510" r="50" fill="#f39c12" opacity="0.15"/>
+                <image href="icons/Graph API logo.png" x="290" y="480" width="60" height="60"/>
+                <text x="320" y="580" text-anchor="middle" class="component-label">Microsoft Graph API</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="200" y="462" width="240" height="155" rx="5" fill="#fff9c4" stroke="#f39c12" stroke-width="2"/>
+                    <text x="210" y="477" class="note-box" font-weight="bold" fill="#f39c12">API Configuration:</text>
+                    <text x="210" y="492" class="note-box">• Azure AD Group App</text>
+                    <text x="210" y="507" class="note-box">• Permissions set up from our side, CCoE</text>
+                    <text x="210" y="522" class="note-box">  approval needed (quick process)</text>
+                    <text x="210" y="537" class="note-box" font-weight="bold" fill="#f39c12">Two purposes:</text>
+                    <text x="210" y="552" class="note-box">1. Get user SharePoint groups</text>
+                    <text x="210" y="567" class="note-box">2. Provide delta (list of modified files)</text>
+                    <text x="210" y="582" class="note-box">   - Polled every 15 min for delta</text>
+                    <text x="320" y="607" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Component 3: Ingestion Pipeline (center, angled between SharePoint and Storage) -->
+            <g class="icon-component">
+                <circle cx="320" cy="280" r="50" fill="#e67e22" opacity="0.15"/>
+                <image href="icons/pipeline.png" x="290" y="250" width="60" height="60"/>
+                <text x="320" y="220" text-anchor="middle" class="component-label">Ingestion Pipeline</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="200" y="232" width="240" height="140" rx="5" fill="#fff3e0" stroke="#e67e22" stroke-width="2"/>
+                    <text x="210" y="247" class="note-box" font-weight="bold" fill="#e67e22">Pipeline Configuration:</text>
+                    <text x="210" y="262" class="note-box">• FastAPI on MAX</text>
+                    <text x="210" y="277" class="note-box">• Polls delta from Graph API every 15 min</text>
+                    <text x="210" y="292" class="note-box">• If delta not empty: fetch modified files</text>
+                    <text x="210" y="307" class="note-box">  from SharePoint</text>
+                    <text x="210" y="322" class="note-box">• Uses LLM to extract entities</text>
+                    <text x="210" y="337" class="note-box">• Ingests structured data to PostgreSQL</text>
+                    <text x="320" y="362" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Arrow: Ingestion → SharePoint (pulling files, dashed) -->
+            <path id="ingestion-step-3" d="M 272 260 Q 215 205 135 135" class="arrow-bi ingestion-arrow" marker-end="url(#arrowhead-dashed)"/>
+            <text id="ingestion-step-3-label" x="115" y="225" class="arrow-label ingestion-arrow">Fetch modified files</text>
+
+            <!-- Arrow: SharePoint → Ingestion (return, dashed) -->
+            <path id="ingestion-step-4" d="M 100 150 L 100 280 L 272 280" class="arrow-bi ingestion-arrow" marker-end="url(#arrowhead-dashed)"/>
+
+            <!-- Component 4: Storage (right side, center) -->
+            <g class="icon-component">
+                <circle cx="750" cy="280" r="50" fill="#9b59b6" opacity="0.15"/>
+                <image href="icons/database-postgres.svg" x="690" y="220" width="120" height="120"/>
+                <text x="750" y="215" text-anchor="middle" class="component-label">PostgreSQL Database</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="630" y="227" width="240" height="140" rx="5" fill="#f3e5f5" stroke="#9b59b6" stroke-width="2"/>
+                    <text x="640" y="242" class="note-box" font-weight="bold" fill="#9b59b6">Database Configuration:</text>
+                    <text x="640" y="257" class="note-box">• PostgreSQL Standard + pgvector extension</text>
+                    <text x="640" y="272" class="note-box">• Stores structured breakdown of MoMs in</text>
+                    <text x="640" y="287" class="note-box">  relational DB</text>
+                    <text x="640" y="302" class="note-box">• Stores conversation history for users</text>
+                    <text x="640" y="317" class="note-box">which can be used for monitoring and for</text>
+                    <text x="640" y="332" class="note-box">intent detection during chat</text>
+                    <text x="750" y="357" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Arrow: Ingestion → Storage (writes data) -->
+            <path id="ingestion-step-6" d="M 370 280 L 700 280" class="arrow-bi ingestion-arrow" marker-end="url(#arrowhead-dashed)"/>
+            <text id="ingestion-step-6-label" x="535" y="270" text-anchor="middle" class="arrow-label ingestion-arrow">Write: docs + metadata + permissions</text>
+
+            <!-- Arrow: Ingestion → Graph API (calculate delta, dashed) -->
+            <path id="ingestion-step-1" d="M 340 330 L 340 460" class="arrow-bi ingestion-arrow" marker-end="url(#arrowhead-dashed)"/>
+            <text id="ingestion-step-1-label" x="355" y="390" class="arrow-label ingestion-arrow">Calculate Delta</text>
+
+            <!-- Polling icon between the two arrows -->
+            <image id="polling-icon" href="icons/polling.gif" x="305" y="380" width="30" height="30" opacity="0.6"/>
+
+            <!-- Arrow: Graph API → Ingestion (list of modified files, dashed) -->
+            <path id="ingestion-step-2" d="M 300 460 L 300 330" class="arrow-bi ingestion-arrow" marker-end="url(#arrowhead-dashed)"/>
+            <text id="ingestion-step-2-label" x="190" y="390" class="arrow-label ingestion-arrow">List of modified files</text>
+
+            <!-- Component 5: AI Agent (bottom center) -->
+            <g class="icon-component">
+                <circle cx="750" cy="510" r="50" fill="#e74c3c" opacity="0.15"/>
+                <text x="750" y="530" text-anchor="middle" font-size="50" fill="#e74c3c">🤖</text>
+                <text x="750" y="580" text-anchor="middle" class="component-label">Marcus</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="630" y="472" width="240" height="90" rx="5" fill="#ffebee" stroke="#e74c3c" stroke-width="2"/>
+                    <text x="640" y="487" class="note-box" font-weight="bold" fill="#e74c3c">Agent Capabilities:</text>
+                    <text x="640" y="502" class="note-box">• LangGraph + Azure OpenAI (GPT-4)</text>
+                    <text x="640" y="517" class="note-box">• Multi-hop RAG, Permission filtering</text>
+                    <text x="640" y="532" class="note-box">• Source citations</text>
+                    <text x="750" y="552" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- OpenAI icon in the center of the rectangle -->
+            <g class="icon-component">
+                <image href="icons/open_ai-removebg-preview.png" x="485" y="345" width="100" height="100"/>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="415" y="357" width="240" height="100" rx="5" fill="#f0f4f8" stroke="#10a37f" stroke-width="2"/>
+                    <text x="425" y="372" class="note-box" font-weight="bold" fill="#10a37f">API Configuration:</text>
+                    <text x="425" y="387" class="note-box">• Uses Azure OpenAI resource from</text>
+                    <text x="425" y="402" class="note-box">  Launchpad (for now)</text>
+                    <text x="425" y="417" class="note-box">• Can be moved to other subscriptions later</text>
+                    <text x="425" y="432" class="note-box">• Used by both Ingestion Pipeline and Marcus</text>
+                    <text x="535" y="447" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Arrow: Ingestion → OpenAI (entity extraction, dashed) -->
+            <path id="ingestion-step-5" d="M 370 300 L 485 370" class="arrow-bi ingestion-arrow" marker-start="url(#arrowhead-dashed-start)" marker-end="url(#arrowhead-dashed)"/>
+            <text id="ingestion-step-5-label" x="430" y="320" class="arrow-label ingestion-arrow">Entity extraction</text>
+
+            <!-- Arrow: Marcus → OpenAI (LLM calls) -->
+            <path id="agent-step-7" d="M 700 490 L 585 420" class="arrow agent-arrow" marker-end="url(#arrowhead)"/>
+            <text id="agent-step-7-label" x="635" y="445" class="arrow-label-blue agent-arrow">LLM calls</text>
+
+            <!-- Arrow: OpenAI → Marcus (return) -->
+            <path id="agent-step-8" d="M 585 420 L 700 490" class="arrow agent-arrow" marker-start="url(#arrowhead-start)"/>
+
+            <!-- Arrow: Marcus → Storage (query) -->
+            <path id="agent-step-5" d="M 740 460 L 740 330" class="arrow agent-arrow"/>
+            <text id="agent-step-5-label1" x="660" y="370" class="arrow-label-blue agent-arrow">Query with</text>
+            <text id="agent-step-5-label2" x="650" y="385" class="arrow-label-blue agent-arrow">permission filter</text>
+
+            <!-- Arrow: Storage → Marcus (results) -->
+            <path id="agent-step-6" d="M 760 330 L 760 460" class="arrow agent-arrow"/>
+            <text id="agent-step-6-label" x="780" y="430" class="arrow-label-blue agent-arrow">Retrieved content</text>
+
+            <!-- Arrow: Marcus → Graph API (get user groups) -->
+            <path id="agent-step-3" d="M 690 510 L 370 510" class="arrow agent-arrow" marker-end="url(#arrowhead)"/>
+            <text id="agent-step-3-label" x="430" y="500" class="arrow-label-blue agent-arrow">Get the user sharepoint permission groups</text>
+
+            <!-- Arrow: Graph API → Marcus (return groups) -->
+            <path id="agent-step-4" d="M 370 510 L 690 510" class="arrow agent-arrow" marker-start="url(#arrowhead-start)"/>
+
+            <!-- Component 6: User Interface (right side, bottom) -->
+            <g class="icon-component">
+                <circle cx="1100" cy="510" r="50" fill="#3498db" opacity="0.15"/>
+                <text x="1100" y="530" text-anchor="middle" font-size="50" fill="#3498db">💻</text>
+                <text x="1100" y="580" text-anchor="middle" class="component-label">User Interface</text>
+
+                <!-- Resources note - on top of icon -->
+                <g class="info-bubble">
+                    <rect x="980" y="467" width="240" height="70" rx="5" fill="#e3f2fd" stroke="#3498db" stroke-width="2"/>
+                    <text x="990" y="482" class="note-box" font-weight="bold" fill="#3498db">Platform Configuration:</text>
+                    <text x="990" y="497" class="note-box">• Platform: Launchpad (for now)</text>
+                    <text x="990" y="512" class="note-box">• Can be moved to other platform later</text>
+                    <text x="1100" y="527" text-anchor="middle" font-size="9" fill="#7f8c8d" font-style="italic">(Click to pin)</text>
+                </g>
+            </g>
+
+            <!-- Arrow: UI → Marcus (query) -->
+            <path id="agent-step-2" d="M 1050 500 L 800 500" class="arrow agent-arrow"/>
+            <text id="agent-step-2-label" x="890" y="490" class="arrow-label-blue agent-arrow">Query</text>
+
+            <!-- Arrow: Marcus → UI (results) -->
+            <path id="agent-step-9" d="M 800 520 L 1050 520" class="arrow agent-arrow"/>
+            <text id="agent-step-9-label" x="870" y="540" class="arrow-label-blue agent-arrow">Results + citations</text>
+
+            <!-- Component 7: User -->
+            <g>
+                <circle cx="1350" cy="510" r="45" fill="#ecf0f1"/>
+                <text x="1350" y="525" text-anchor="middle" font-size="45">👤</text>
+                <text x="1350" y="575" text-anchor="middle" class="component-label">User</text>
+                <text x="1350" y="593" text-anchor="middle" font-size="11" fill="#7f8c8d">(~30)</text>
+            </g>
+
+            <!-- Arrow: User → UI (question) -->
+            <path id="agent-step-1" d="M 1300 500 L 1160 500" class="arrow agent-arrow"/>
+            <text id="agent-step-1-label" x="1210" y="490" class="arrow-label-blue agent-arrow">Ask question</text>
+
+            <!-- Arrow: UI → User (answer) -->
+            <path id="agent-step-10" d="M 1160 520 L 1300 520" class="arrow agent-arrow"/>
+            <text id="agent-step-10-label" x="1210" y="540" class="arrow-label-blue agent-arrow">Show answer</text>
+
+            <!-- Legend (top right corner) -->
+            <g>
+                <rect x="1200" y="30" width="200" height="80" rx="5" fill="#f8f9fa" stroke="#bdc3c7" stroke-width="1.5"/>
+                <text x="1210" y="50" font-size="12" font-weight="bold" fill="#2c3e50">Process Flows</text>
+
+                <!-- Ingestion (gray dotted) -->
+                <path d="M 1210 65 L 1260 65" class="arrow-bi" marker-end="url(#arrowhead-dashed)"/>
+                <text x="1270" y="70" font-size="11" fill="#2c3e50">Ingestion</text>
+
+                <!-- Agent Logic (blue) -->
+                <path d="M 1210 90 L 1260 90" class="arrow"/>
+                <text x="1270" y="95" font-size="11" fill="#2c3e50">Agent Logic</text>
+            </g>
+
+            <!-- Animation Controls (underneath legend) -->
+            <g id="animation-controls">
+                <!-- Animate Ingestion Link -->
+                <text id="animate-ingestion-btn" x="1210" y="130" font-size="11" fill="#e67e22" style="cursor: pointer; text-decoration: underline;">Animate Ingestion</text>
+
+                <!-- Animate Agent Logic Link -->
+                <text id="animate-agent-btn" x="1210" y="150" font-size="11" fill="#3498db" style="cursor: pointer; text-decoration: underline;">Animate Agent Logic</text>
+
+                <!-- Next Step Link (initially hidden) -->
+                <text id="next-step-btn" x="1340" y="130" font-size="11" fill="#2c3e50" style="cursor: pointer; text-decoration: underline; display: none;">Next Step</text>
+            </g>
+        </svg>
+    </div>
+    <script>
+        // Toggle info bubbles on label click
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = document.querySelector('svg');
+            const components = document.querySelectorAll('.icon-component');
+
+            // Store original parent for each bubble and pinned state
+            const bubbleParents = new Map();
+            const pinnedBubbles = new Set();
+            document.querySelectorAll('.info-bubble').forEach(bubble => {
+                bubbleParents.set(bubble, bubble.parentElement);
+            });
+
+            components.forEach(component => {
+                const bubble = component.querySelector('.info-bubble');
+                const label = component.querySelector('.component-label');
+                const circle = component.querySelector('circle');
+                const images = component.querySelectorAll('image');
+                // Get all text elements that are not the label or inside the bubble (like emojis)
+                const iconTexts = Array.from(component.querySelectorAll('text')).filter(
+                    t => !t.classList.contains('component-label') && !bubble.contains(t)
+                );
+                const pinText = bubble ? bubble.querySelector('text[font-style="italic"]') : null;
+
+                if (!bubble) return;
+
+                let isHovering = false;
+
+                // Update pin text
+                const updatePinText = () => {
+                    if (pinText) {
+                        pinText.textContent = pinnedBubbles.has(bubble) ? '(Click to unpin)' : '(Click to pin)';
+                    }
+                };
+
+                // Show on hover - always move to end to overlay everything
+                const showBubble = () => {
+                    isHovering = true;
+                    // Always move to end of SVG to overlay everything
+                    svg.appendChild(bubble);
+                    requestAnimationFrame(() => {
+                        bubble.classList.add('active');
+                    });
+                };
+
+                // Hide on mouse leave (if not pinned)
+                const hideBubble = () => {
+                    isHovering = false;
+                    // Small delay to prevent flickering when moving between elements
+                    setTimeout(() => {
+                        if (!isHovering && !pinnedBubbles.has(bubble)) {
+                            bubble.classList.remove('active');
+                            setTimeout(() => {
+                                const originalParent = bubbleParents.get(bubble);
+                                if (originalParent && !pinnedBubbles.has(bubble)) {
+                                    originalParent.appendChild(bubble);
+                                }
+                            }, 400); // Wait for transition to complete
+                        }
+                    }, 50);
+                };
+
+                // Pin/unpin on click
+                const togglePin = (e) => {
+                    e.stopPropagation();
+                    if (pinnedBubbles.has(bubble)) {
+                        // Unpin
+                        pinnedBubbles.delete(bubble);
+                        updatePinText();
+                        bubble.classList.remove('active');
+                        const originalParent = bubbleParents.get(bubble);
+                        if (originalParent) {
+                            originalParent.appendChild(bubble);
+                        }
+                    } else {
+                        // Pin
+                        pinnedBubbles.add(bubble);
+                        updatePinText();
+                        svg.appendChild(bubble);
+                        requestAnimationFrame(() => {
+                            bubble.classList.add('active');
+                        });
+                    }
+                };
+
+                // Add event listeners to label
+                if (label) {
+                    label.addEventListener('mouseenter', showBubble);
+                    label.addEventListener('mouseleave', hideBubble);
+                    label.addEventListener('click', togglePin);
+                }
+
+                // Add event listeners to circle (hover and click)
+                if (circle) {
+                    circle.addEventListener('mouseenter', showBubble);
+                    circle.addEventListener('mouseleave', hideBubble);
+                    circle.addEventListener('click', togglePin);
+                }
+
+                // Add event listeners to all images (hover and click)
+                images.forEach(img => {
+                    img.addEventListener('mouseenter', showBubble);
+                    img.addEventListener('mouseleave', hideBubble);
+                    img.addEventListener('click', togglePin);
+                });
+
+                // Add event listeners to icon text elements (like emojis)
+                iconTexts.forEach(txt => {
+                    txt.addEventListener('mouseenter', showBubble);
+                    txt.addEventListener('mouseleave', hideBubble);
+                    txt.addEventListener('click', togglePin);
+                });
+            });
+
+            // Animation logic for Ingestion Pipeline
+            let ingestionAnimationActive = false;
+            let agentAnimationActive = false;
+            let currentIngestionStep = 0;
+            let currentAgentStep = 0;
+            const totalIngestionSteps = 7; // 6 arrows + 1 polling icon
+            const totalAgentSteps = 10; // 10 arrows for agent logic
+
+            const animateIngestionBtn = document.getElementById('animate-ingestion-btn');
+            const animateAgentBtn = document.getElementById('animate-agent-btn');
+            const nextStepBtn = document.getElementById('next-step-btn');
+            const pollingIcon = document.getElementById('polling-icon');
+
+            animateIngestionBtn.addEventListener('click', function() {
+                ingestionAnimationActive = true;
+                agentAnimationActive = false;
+                currentIngestionStep = 0;
+
+                // Hide all ingestion arrows and polling icon
+                document.querySelectorAll('.ingestion-arrow').forEach(el => {
+                    el.style.display = 'none';
+                });
+                pollingIcon.style.display = 'none';
+
+                // Show next step button at ingestion position
+                nextStepBtn.setAttribute('y', '130');
+                nextStepBtn.style.display = 'block';
+
+                // Show first step
+                showIngestionStep(1);
+            });
+
+            animateAgentBtn.addEventListener('click', function() {
+                agentAnimationActive = true;
+                ingestionAnimationActive = false;
+                currentAgentStep = 0;
+
+                // Hide all agent arrows
+                document.querySelectorAll('.agent-arrow').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                // Show next step button at agent position
+                nextStepBtn.setAttribute('y', '150');
+                nextStepBtn.style.display = 'block';
+
+                // Show first step
+                showAgentStep(1);
+            });
+
+            nextStepBtn.addEventListener('click', function() {
+                if (ingestionAnimationActive) {
+                    if (currentIngestionStep < totalIngestionSteps) {
+                        showIngestionStep(currentIngestionStep + 1);
+                    } else {
+                        // Animation complete, reset - show all arrows again
+                        ingestionAnimationActive = false;
+                        nextStepBtn.style.display = 'none';
+                        currentIngestionStep = 0;
+
+                        // Show all ingestion arrows again
+                        document.querySelectorAll('.ingestion-arrow').forEach(el => {
+                            el.style.display = 'block';
+                        });
+                        pollingIcon.style.display = 'block';
+                    }
+                } else if (agentAnimationActive) {
+                    if (currentAgentStep < totalAgentSteps) {
+                        showAgentStep(currentAgentStep + 1);
+                    } else {
+                        // Animation complete, reset - show all arrows again
+                        agentAnimationActive = false;
+                        nextStepBtn.style.display = 'none';
+                        currentAgentStep = 0;
+
+                        // Show all agent arrows again
+                        document.querySelectorAll('.agent-arrow').forEach(el => {
+                            el.style.display = 'block';
+                        });
+                    }
+                }
+            });
+
+            function showIngestionStep(stepNumber) {
+                currentIngestionStep = stepNumber;
+
+                // Step 7 is the polling icon
+                if (stepNumber === 7) {
+                    pollingIcon.style.display = 'block';
+                } else {
+                    // Show the arrow and label for this step
+                    const arrow = document.getElementById(`ingestion-step-${stepNumber}`);
+                    const label = document.getElementById(`ingestion-step-${stepNumber}-label`);
+
+                    if (arrow) arrow.style.display = 'block';
+                    if (label) label.style.display = 'block';
+                }
+            }
+
+            function showAgentStep(stepNumber) {
+                currentAgentStep = stepNumber;
+
+                // Show the arrow and labels for this step
+                const arrow = document.getElementById(`agent-step-${stepNumber}`);
+                const label = document.getElementById(`agent-step-${stepNumber}-label`);
+                const label1 = document.getElementById(`agent-step-${stepNumber}-label1`);
+                const label2 = document.getElementById(`agent-step-${stepNumber}-label2`);
+
+                if (arrow) arrow.style.display = 'block';
+                if (label) label.style.display = 'block';
+                if (label1) label1.style.display = 'block';
+                if (label2) label2.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
